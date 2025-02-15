@@ -57,7 +57,7 @@ class ToolError extends Error {
 }
 
 export class ShellMCPServer {
-  public readonly version = "0.3.1";
+  public readonly version = "0.3.2";
   public readonly capabilities = {};
 
   private server: Server;
@@ -69,11 +69,13 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.3.1",
+        version: "0.3.2",
         description: "Shell command execution MCP server"
       },
       {
-        capabilities: {}
+        capabilities: {
+          tools: {}
+        }
       }
     );
 
