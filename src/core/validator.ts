@@ -3,16 +3,17 @@ import { ToolError } from '../utils/errors.js';
 
 export class CommandValidator {
   validateCommand(command: string, args: string[] = []): CommandConfig {
-    const fullCommand = command.startsWith('shell.') ? command : `shell.${command}`;
-    const config = allowedCommands[fullCommand];
+    const baseCommand = command.replace('shell.', '');
     
-    if (!config) {
+    if (!(`shell.${baseCommand}` in allowedCommands)) {
       throw new ToolError(
         'INVALID_COMMAND',
         '不允許的命令',
         { command, availableCommands: Object.keys(allowedCommands) }
       );
     }
+
+    const config = allowedCommands[`shell.${baseCommand}`];
 
     if (args.length > 0 && config.allowedArgs) {
       const invalidArgs = args.filter(arg => !config.allowedArgs?.includes(arg));

@@ -44,9 +44,12 @@ export class CommandExecutor {
         return this.createStreamFromCache(cached);
       }
 
+      // 移除 'shell.' 前綴以執行命令
+      const baseCommand = command.replace('shell.', '');
+
       // 執行命令
       this.logger.debug('開始執行命令', { command, args, options });
-      const childProcess = spawn(command, args, {
+      const childProcess = spawn(baseCommand, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: options.timeout,
         cwd: options.cwd,
