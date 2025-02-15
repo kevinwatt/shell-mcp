@@ -2,16 +2,19 @@ import { allowedCommands, CommandConfig } from '../config/allowlist.js';
 
 export class CommandValidator {
   validateCommand(command: string, args: string[] = []): CommandConfig {
-    const config = allowedCommands[command];
+    // 添加前綴以匹配 allowlist 中的鍵
+    const fullCommand = `shell.${command}`;
+    const config = allowedCommands[fullCommand];
     
     if (!config) {
-      throw new Error(`不允許的命令: ${command}`);
+      throw new Error('不允許的命令');
     }
 
-    if (config.allowedArgs) {
+    // 驗證參數
+    if (args.length > 0 && config.allowedArgs) {
       for (const arg of args) {
         if (!config.allowedArgs.includes(arg)) {
-          throw new Error(`不允許的參數: ${arg}`);
+          throw new Error('不允許的參數');
         }
       }
     }

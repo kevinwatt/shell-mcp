@@ -2,7 +2,7 @@
 
 > Shell command execution MCP server
 
-[![Version](https://img.shields.io/badge/version-0.1.5-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![Version](https://img.shields.io/badge/version-0.1.6-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An MCP server implementation that provides secure shell command execution capabilities for LLMs.
@@ -42,12 +42,22 @@ npm install @kevinwatt/shell-mcp
 
 ## Tool Documentation
 
-- **execute_command**
+- **ls, pwd, df, etc.**
   - Execute whitelisted shell commands
   - Inputs:
     - `command` (string, required): Command to execute
     - `args` (array, optional): Command arguments
     - `timeout` (number, optional): Execution timeout in ms
+
+Available commands:
+- ls: List directory contents
+- pwd: Show current working directory
+- df: Show disk usage
+- echo: Display text
+- ps: Show process status
+- free: Show memory usage
+- uptime: Show system uptime
+- date: Show system date and time
 
 ## Usage Examples
 
