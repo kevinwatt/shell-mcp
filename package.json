@@ -1,10 +1,30 @@
 {
   "name": "@kevinwatt/shell-mcp",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Shell command execution MCP server",
   "type": "module",
+  "keywords": [
+    "mcp",
+    "shell",
+    "command",
+    "claude",
+    "llm",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevinwatt/shell-mcp"
+  },
   "bin": {
     "shell-mcp": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",

@@ -50,6 +50,12 @@ async function main() {
       cleanup().finally(() => process.exit(1));
     });
 
+    // 添加連接錯誤處理
+    process.on('disconnect', () => {
+      logger.error('與父進程的連接已關閉');
+      cleanup().finally(() => process.exit(1));
+    });
+
     // 初始化安全檢查器
     const security = SecurityChecker.getInstance();
     await security.validateCommand('init', [], {});
