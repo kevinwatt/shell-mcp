@@ -3,24 +3,39 @@ import { ToolError } from '../utils/errors.js';
 
 export class CommandValidator {
   validateCommand(command: string, args: string[] = []): CommandConfig {
+    console.log('Validating command:', {
+      command,
+      args,
+      baseCommand: command.replace('shell.', ''),
+      fullCommand: `shell.${command.replace('shell.', '')}`,
+      config: allowedCommands[`shell.${command.replace('shell.', '')}`]
+    });
+
     const baseCommand = command.replace('shell.', '');
     
     if (!(`shell.${baseCommand}` in allowedCommands)) {
-      throw new Error(`Unknown command: ${command}`);
+      throw new Error(`不允許的命令: ${command}`);
     }
     
     const config = allowedCommands[`shell.${baseCommand}`];
     
     const allowedArgs = config.allowedArgs || [];
     
+    console.log('Checking args:', {
+      allowedArgs,
+      hasWildcard: allowedArgs.includes('*')
+    });
+
     args.forEach(arg => {
       if (arg.startsWith('-')) {
         if (!allowedArgs.includes(arg)) {
-          throw new Error(`Invalid option: ${arg}`);
+          console.log('Invalid option:', arg);
+          throw new Error(`不允許的參數: ${arg}`);
         }
       }
       else if (!allowedArgs.includes('*')) {
-        throw new Error(`Path arguments not allowed for this command`);
+        console.log('Path not allowed:', arg);
+        throw new Error(`不允許的參數: ${arg}`);
       }
     });
     
