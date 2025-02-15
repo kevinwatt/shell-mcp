@@ -1,7 +1,10 @@
 {
   "name": "@kevinwatt/shell-mcp",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Shell command execution MCP server",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "keywords": [
     "mcp",

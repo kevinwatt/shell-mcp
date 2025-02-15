@@ -13,7 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.3.7",
+    version: "0.3.8",
     description: "Shell command execution MCP server"
   },
   {
