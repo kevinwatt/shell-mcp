@@ -6,30 +6,24 @@ export class CommandValidator {
     const baseCommand = command.replace('shell.', '');
     
     if (!(`shell.${baseCommand}` in allowedCommands)) {
-      throw new ToolError(
-        'INVALID_COMMAND',
-        '不允許的命令',
-        { command, availableCommands: Object.keys(allowedCommands) }
-      );
+      throw new Error(`Unknown command: ${command}`);
     }
-
+    
     const config = allowedCommands[`shell.${baseCommand}`];
-
-    if (args.length > 0 && config.allowedArgs) {
-      const invalidArgs = args.filter(arg => !config.allowedArgs?.includes(arg));
-      if (invalidArgs.length > 0) {
-        throw new ToolError(
-          'INVALID_ARGS',
-          '不允許的參數',
-          { 
-            command,
-            invalidArgs,
-            allowedArgs: config.allowedArgs 
-          }
-        );
+    
+    const allowedArgs = config.allowedArgs || [];
+    
+    args.forEach(arg => {
+      if (arg.startsWith('-')) {
+        if (!allowedArgs.includes(arg)) {
+          throw new Error(`Invalid option: ${arg}`);
+        }
       }
-    }
-
+      else if (!allowedArgs.includes('*')) {
+        throw new Error(`Path arguments not allowed for this command`);
+      }
+    });
+    
     return config;
   }
 
