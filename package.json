@@ -1,6 +1,6 @@
 {
   "name": "@kevinwatt/shell-mcp",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Shell command execution MCP server",
   "type": "module",
   "keywords": [

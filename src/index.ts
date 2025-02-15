@@ -13,7 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.3.4",
+    version: "0.3.5",
     description: "Shell command execution MCP server"
   },
   {
@@ -25,20 +25,35 @@ const server = new Server(
 
 // 設置工具處理程式
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  const tools = Object.entries(allowedCommands).map(([name, config]) => ({
-    name: name.replace('shell.', ''),
-    description: config.description,
-    inputSchema: {
-      type: "object",
-      properties: {
-        args: {
-          type: "array",
-          items: { type: "string" },
-          description: "命令參數"
-        }
+  // 使用 Set 來確保工具名稱唯一
+  const toolNames = new Set<string>();
+  console.log('處理的命令：', Object.keys(allowedCommands));
+  
+  const tools = Object.entries(allowedCommands)
+    .map(([name, config]) => {
+      const toolName = name.replace('shell.', '');
+      console.log('處理工具：', { original: name, toolName, isDuplicate: toolNames.has(toolName) });
+      if (toolNames.has(toolName)) {
+        console.warn('發現重複的工具名稱：', toolName);
+        return null;
       }
-    }
-  }));
+      toolNames.add(toolName);
+      return {
+        name: toolName,
+        description: config.description,
+        inputSchema: {
+          type: "object",
+          properties: {
+            args: {
+              type: "array",
+              items: { type: "string" },
+              description: "命令參數"
+            }
+          }
+        }
+      };
+    })
+    .filter((tool): tool is NonNullable<typeof tool> => tool !== null);
   return { tools };
 });
 
