@@ -2,7 +2,7 @@
 
 > Shell command execution MCP server
 
-[![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An MCP server implementation that provides secure shell command execution capabilities for LLMs.
@@ -21,9 +21,9 @@ An MCP server implementation that provides secure shell command execution capabi
 npm install @kevinwatt/shell-mcp
 ```
 
-## Configuration with Claude Desktop
+## Configuration with [Dive Desktop](https://github.com/OpenAgentPlatform/Dive)
 
-1. Click "+ Add MCP Server" in Claude Desktop
+1. Click "+ Add MCP Server" in Dive Desktop
 2. Copy and paste this configuration:
 
 ```json
