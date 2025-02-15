@@ -13,8 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.4.0",
-    description: "Shell command execution MCP server"
+    version: "0.4.1",
   },
   {
     capabilities: {
@@ -34,7 +33,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         args: {
           type: "array",
           items: { type: "string" },
-          description: "命令參數"
+          description: "Command arguments"
         }
       }
     }
@@ -49,7 +48,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     
     if (!(fullCommand in allowedCommands)) {
       return {
-        content: [{ type: "text", text: `未知的命令：${command}` }],
+        content: [{ type: "text", text: `Unknown command: ${command}` }],
         isError: true
       };
     }
@@ -77,7 +76,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return {
       content: [{ 
         type: "text", 
-        text: `執行命令失敗：${error instanceof Error ? error.message : String(error)}` 
+        text: `Command execution failed: ${error instanceof Error ? error.message : String(error)}` 
       }],
       isError: true
     };

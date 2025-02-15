@@ -10,13 +10,13 @@ export interface CommandConfig {
 export const allowedCommands: Record<string, CommandConfig> = {
   'shell.ls': {
     command: 'ls',
-    description: '列出目錄內容',
+    description: 'List directory contents',
     allowedArgs: ['-l', '-a', '-h', '-R'],
     timeout: 5000
   },
   'shell.pwd': {
     command: 'pwd',
-    description: '顯示當前工作目錄',
+    description: 'Show current working directory',
     timeout: 1000
   },
   'shell.df': {

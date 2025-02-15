@@ -2,7 +2,7 @@
 
 > Shell command execution MCP server
 
-[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![Version](https://img.shields.io/badge/version-0.4.1-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An MCP server implementation that provides secure shell command execution capabilities for LLMs.
@@ -42,7 +42,7 @@ npm install @kevinwatt/shell-mcp
 
 ## Tool Documentation
 
-- **ls, pwd, df, etc.**
+- **shell_ls, shell_pwd, shell_df, etc.**
   - Execute whitelisted shell commands
   - Inputs:
     - `command` (string, required): Command to execute
@@ -50,23 +50,23 @@ npm install @kevinwatt/shell-mcp
     - `timeout` (number, optional): Execution timeout in ms
 
 Available commands:
-- ls: List directory contents
-- pwd: Show current working directory
-- df: Show disk usage
-- echo: Display text
-- ps: Show process status
-- free: Show memory usage
-- uptime: Show system uptime
-- date: Show system date and time
+- shell_ls: List directory contents
+- shell_pwd: Show current working directory
+- shell_df: Show disk usage
+- shell_echo: Display text
+- shell_ps: Show process status
+- shell_free: Show memory usage
+- shell_uptime: Show system uptime
+- shell_date: Show system date and time
 
 ## Usage Examples
 
 Ask your LLM to:
 
 ```
-"Show current directory: pwd"
-"List files: ls -l"
-"Check disk usage: df -h"
+"Show current directory using shell_pwd"
+"List files using shell_ls with -l argument"
+"Check disk usage using shell_df with -h argument"
 ```
 
 ## Manual Start
