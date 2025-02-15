@@ -2,7 +2,7 @@
 
 > Shell command execution MCP server
 
-[![Version](https://img.shields.io/badge/version-0.2.5-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![Version](https://img.shields.io/badge/version-0.2.7-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An MCP server implementation that provides secure shell command execution capabilities for LLMs.
