@@ -17,14 +17,13 @@ export const allowedCommands: Record<string, CommandConfig> = {
   'shell.pwd': {
     command: 'pwd',
     description: '顯示當前工作目錄',
-    timeout: 1000,
-    allowedArgs: []
+    timeout: 1000
   },
   'shell.df': {
     command: 'df',
     description: '顯示磁碟使用情況',
-    timeout: 5000,
-    allowedArgs: ['-h', '-T']
+    allowedArgs: ['-h', '-T'],
+    timeout: 5000
   },
   'shell.echo': {
     command: 'echo',
@@ -59,17 +58,7 @@ export const allowedCommands: Record<string, CommandConfig> = {
 // 安全性設定
 export const securityConfig = {
   maxOutputSize: 1024 * 1024, // 1MB
-  defaultTimeout: 5000,
-  restrictedPaths: [
-    '/etc',
-    '/usr',
-    '/var',
-    '/root'
-  ],
-  allowedEnvVars: [
-    'PATH',
-    'LANG',
-    'HOME',
-    'USER'
-  ]
+  defaultTimeout: 30000, // 30 seconds
+  restrictedPaths: ['/etc', '/var', '/root', '/usr/bin'],
+  allowedEnvVars: ['PATH', 'HOME', 'USER', 'SHELL', 'LANG']
 }; 

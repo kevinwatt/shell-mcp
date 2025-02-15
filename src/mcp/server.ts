@@ -57,7 +57,7 @@ class ToolError extends Error {
 }
 
 export class ShellMCPServer {
-  public readonly version = "0.1.6";
+  public readonly version = "0.2.1";
   public readonly capabilities = {
     tools: {}
   };
@@ -71,7 +71,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.2.0",
+        version: "0.2.1",
       },
       {
         capabilities: {
@@ -105,8 +105,18 @@ export class ShellMCPServer {
     const tools: Tool[] = [];
     const processedNames = new Set<string>();
 
+    this.logger.debug('開始處理工具列表', { 
+      commandCount: Object.keys(allowedCommands).length 
+    });
+
     Object.entries(allowedCommands).forEach(([name, config]) => {
       const toolName = name.replace('shell.', '');
+      this.logger.debug('處理命令', { 
+        originalName: name,
+        toolName,
+        isProcessed: processedNames.has(toolName)
+      });
+
       if (!processedNames.has(toolName)) {
         processedNames.add(toolName);
         tools.push({
@@ -124,6 +134,11 @@ export class ShellMCPServer {
           }
         });
       }
+    });
+
+    this.logger.debug('工具列表處理完成', { 
+      toolCount: tools.length,
+      processedNames: Array.from(processedNames)
     });
 
     this.validateToolNames(tools);
