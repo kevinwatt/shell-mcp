@@ -11,7 +11,7 @@ export const allowedCommands: Record<string, CommandConfig> = {
   'shell.ls': {
     command: 'ls',
     description: 'List directory contents',
-    allowedArgs: ['-l', '-a', '-h', '-R'],
+    allowedArgs: ['-l', '-a', '-h', '-R', '--help', '*'],
     timeout: 5000
   },
   'shell.pwd': {
@@ -21,8 +21,8 @@ export const allowedCommands: Record<string, CommandConfig> = {
   },
   'shell.df': {
     command: 'df',
-    description: '顯示磁碟使用情況',
-    allowedArgs: ['-h', '-T'],
+    description: 'Show disk usage',
+    allowedArgs: ['-h', '-T', '--help'],
     timeout: 5000
   },
   'shell.echo': {
@@ -59,6 +59,6 @@ export const allowedCommands: Record<string, CommandConfig> = {
 export const securityConfig = {
   maxOutputSize: 1024 * 1024, // 1MB
   defaultTimeout: 30000, // 30 seconds
-  restrictedPaths: ['/etc', '/var', '/root', '/usr/bin'],
+  restrictedPaths: ['/etc', '/var', '/root'],
   allowedEnvVars: ['PATH', 'HOME', 'USER', 'SHELL', 'LANG']
 }; 
