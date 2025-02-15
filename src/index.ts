@@ -13,7 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.3.8",
+    version: "0.3.9",
     description: "Shell command execution MCP server"
   },
   {
@@ -26,7 +26,7 @@ const server = new Server(
 // 設置工具處理程式
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   const tools = Object.entries(allowedCommands).map(([name, config]) => ({
-    name: name.replace('shell.', ''),
+    name: name.replace(/[^a-zA-Z0-9_-]/g, '_'),  // 確保名稱符合 MCP 規範
     description: config.description,
     inputSchema: {
       type: "object",
