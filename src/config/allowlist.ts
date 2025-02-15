@@ -26,29 +26,29 @@ export const allowedCommands: Record<string, CommandConfig> = {
     timeout: 5000,
     allowedArgs: ['-h', '-T']
   },
-  'echo': {
+  'shell.echo': {
     command: 'echo',
     description: '顯示文字',
     timeout: 1000
   },
-  'ps': {
+  'shell.ps': {
     command: 'ps',
     description: '顯示進程狀態',
     allowedArgs: ['-e', '-f', '-u', '--help'],
     timeout: 5000
   },
-  'free': {
+  'shell.free': {
     command: 'free',
     description: '顯示記憶體使用情況',
     allowedArgs: ['-h', '-m', '-g', '--help'],
     timeout: 5000
   },
-  'uptime': {
+  'shell.uptime': {
     command: 'uptime',
     description: '顯示系統運行時間',
     timeout: 1000
   },
-  'date': {
+  'shell.date': {
     command: 'date',
     description: '顯示系統日期和時間',
     allowedArgs: ['+%Y-%m-%d', '+%H:%M:%S', '--help'],

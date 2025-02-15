@@ -27,7 +27,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.1.4",
+        version: "0.1.5",
       },
       {
         capabilities: {
