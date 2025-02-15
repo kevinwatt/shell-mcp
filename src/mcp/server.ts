@@ -57,7 +57,7 @@ class ToolError extends Error {
 }
 
 export class ShellMCPServer {
-  public readonly version = "0.2.4";
+  public readonly version = "0.2.5";
   public readonly capabilities = {};
 
   private server: Server;
@@ -69,7 +69,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.2.4",
+        version: "0.2.5",
         description: "Shell command execution MCP server"
       },
       {
@@ -255,7 +255,24 @@ export class ShellMCPServer {
   async start() {
     try {
       const transport = new StdioServerTransport();
+      
+      // 設置 stdio 流的編碼
+      process.stdin.setEncoding('utf8');
+      process.stdout.setDefaultEncoding('utf8');
+      
+      // 防止進程過早退出
+      process.stdin.resume();
+      
+      // 確保在連接前清空緩衝區
+      process.stdout.write('');
+      
       await this.server.connect(transport);
+      
+      this.logger.info('MCP 伺服器已啟動並等待連接', {
+        name: "shell-mcp",
+        version: this.version
+      });
+      
     } catch (error) {
       this.logger.error('伺服器啟動失敗', {
         error: error instanceof Error ? error.message : String(error),
