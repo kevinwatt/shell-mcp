@@ -2,6 +2,7 @@
 
 > Shell command execution MCP server
 
+[![smithery badge](https://smithery.ai/badge/@kevinwatt/shell-mcp)](https://smithery.ai/server/@kevinwatt/shell-mcp)
 [![Version](https://img.shields.io/badge/version-0.1.3-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -17,6 +18,15 @@ An MCP server implementation that provides secure shell command execution capabi
 
 ## Installation
 
+### Installing via Smithery
+
+To install Shell Command Execution Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@kevinwatt/shell-mcp):
+
+```bash
+npx -y @smithery/cli install @kevinwatt/shell-mcp --client claude
+```
+
+### Manual Installation
 ```bash
 npm install @kevinwatt/shell-mcp
 ```
