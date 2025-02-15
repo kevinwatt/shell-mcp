@@ -13,7 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.3.9",
+    version: "0.4.0",
     description: "Shell command execution MCP server"
   },
   {
@@ -26,7 +26,7 @@ const server = new Server(
 // 設置工具處理程式
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   const tools = Object.entries(allowedCommands).map(([name, config]) => ({
-    name: name.replace(/[^a-zA-Z0-9_-]/g, '_'),  // 確保名稱符合 MCP 規範
+    name: name.replace('shell.', 'shell_'),  // 將 shell. 替換為 shell_
     description: config.description,
     inputSchema: {
       type: "object",
@@ -45,7 +45,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const command = String(request.params?.name || '');
-    const fullCommand = `shell.${command}`;
+    const fullCommand = `shell.${command.replace('shell_', '')}`;  // 將 shell_ 替換回 shell.
     
     if (!(fullCommand in allowedCommands)) {
       return {
@@ -54,12 +54,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
     
+    const actualCommand = allowedCommands[fullCommand].command;
     const args = Array.isArray(request.params?.arguments?.args)
       ? request.params.arguments.args.map(String)
       : [];
   
-    validator.validateCommand(fullCommand, args);
-    const stream = await executor.execute(fullCommand, args);
+    validator.validateCommand(actualCommand, args);
+    const stream = await executor.execute(actualCommand, args);
   
     return {
       content: [{
