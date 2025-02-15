@@ -13,7 +13,7 @@ const validator = new CommandValidator();
 const server = new Server(
   {
     name: "shell-mcp",
-    version: "0.3.6",
+    version: "0.3.7",
     description: "Shell command execution MCP server"
   },
   {
@@ -25,39 +25,31 @@ const server = new Server(
 
 // 設置工具處理程式
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  // 直接使用完整的命令名稱作為工具名稱
-  const tools = Object.entries(allowedCommands).map(([name, config]) => {
-    console.log('註冊工具：', name);
-    return {
-      name,  // 使用完整名稱，包含 'shell.' 前綴
-      description: config.description,
-      inputSchema: {
-        type: "object",
-        properties: {
-          args: {
-            type: "array",
-            items: { type: "string" },
-            description: "命令參數"
-          }
+  const tools = Object.entries(allowedCommands).map(([name, config]) => ({
+    name: name.replace('shell.', ''),
+    description: config.description,
+    inputSchema: {
+      type: "object",
+      properties: {
+        args: {
+          type: "array",
+          items: { type: "string" },
+          description: "命令參數"
         }
       }
-    };
-  });
-  
-  console.log('註冊的工具列表：', tools.map(t => t.name));
+    }
+  }));
   return { tools };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const command = String(request.params?.name || '');
-    // 始終添加 'shell.' 前綴
-    const fullCommand = `shell.${command.replace('shell.', '')}`;
-    console.log('執行命令：', { originalCommand: command, fullCommand });
+    const fullCommand = `shell.${command}`;
     
     if (!(fullCommand in allowedCommands)) {
       return {
-        content: [{ type: "text", text: `未知的命令：${fullCommand}` }],
+        content: [{ type: "text", text: `未知的命令：${command}` }],
         isError: true
       };
     }
