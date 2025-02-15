@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { CommandValidator } from '../validator.js';
 
 describe('CommandValidator', () => {

@@ -1,8 +1,7 @@
 {
-  "name": "shell-mcp",
-  "version": "0.1.1",
+  "name": "@kevinwatt/shell-mcp",
+  "version": "0.1.2",
   "description": "Shell command execution MCP server",
-  "private": true,
   "type": "module",
   "bin": {
     "shell-mcp": "./build/index.js"
@@ -18,7 +17,7 @@
     "@modelcontextprotocol/sdk": "0.6.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.11.24",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",

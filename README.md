@@ -1,72 +1,102 @@
-# shell-mcp MCP Server
+# shell-mcp
 
-Version: 0.1.1
+> Shell command execution MCP server
 
-shell mcp
+[![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-This is a TypeScript-based MCP server that implements a simple notes system. It demonstrates core MCP concepts by providing:
-
-- Resources representing text notes with URIs and metadata
-- Tools for creating new notes
-- Prompts for generating summaries of notes
+An MCP server implementation that provides secure shell command execution capabilities for LLMs.
 
 ## Features
 
-### Resources
-- List and access notes via `note://` URIs
-- Each note has a title, content and metadata
-- Plain text mime type for simple content access
-
-### Tools
-- `create_note` - Create new text notes
-  - Takes title and content as required parameters
-  - Stores note in server state
-
-### Prompts
-- `summarize_notes` - Generate a summary of all stored notes
-  - Includes all note contents as embedded resources
-  - Returns structured prompt for LLM summarization
-
-## Development
-
-Install dependencies:
-```bash
-npm install
-```
-
-Build the server:
-```bash
-npm run build
-```
-
-For development with auto-rebuild:
-```bash
-npm run watch
-```
+- **Secure Execution**: Whitelisted commands and arguments only
+- **Resource Control**: Memory and CPU usage monitoring
+- **Timeout Control**: Automatic termination of long-running commands
+- **Size Limits**: Output size restrictions for safety
+- **MCP Integration**: Works with Claude and other MCP-compatible LLMs
 
 ## Installation
 
-To use with Claude Desktop, add the server config:
+```bash
+npm install @kevinwatt/shell-mcp
+```
 
-On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+## Configuration with Claude Desktop
+
+1. Click "+ Add MCP Server" in Claude Desktop
+2. Copy and paste this configuration:
 
 ```json
 {
   "mcpServers": {
-    "shell-mcp": {
-      "command": "/path/to/shell-mcp/build/index.js"
+    "shell": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@kevinwatt/shell-mcp"
+      ]
     }
   }
 }
 ```
 
-### Debugging
+## Tool Documentation
 
-Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
+- **execute_command**
+  - Execute whitelisted shell commands
+  - Inputs:
+    - `command` (string, required): Command to execute
+    - `args` (array, optional): Command arguments
+    - `timeout` (number, optional): Execution timeout in ms
 
-```bash
-npm run inspector
+## Usage Examples
+
+Ask your LLM to:
+
+```
+"Show current directory: pwd"
+"List files: ls -l"
+"Check disk usage: df -h"
 ```
 
-The Inspector will provide a URL to access debugging tools in your browser.
+## Manual Start
+
+If needed, start the server manually:
+
+```bash
+npx @kevinwatt/shell-mcp
+```
+
+## Requirements
+
+- Node.js 18+
+- MCP-compatible LLM service
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Watch mode
+npm run watch
+
+# Run tests
+npm test
+
+# Lint
+npm run lint
+```
+
+## License
+
+MIT © Kevin Watt
+
+## Keywords
+
+- mcp
+- shell
+- command
+- claude
+- llm
+- automation
