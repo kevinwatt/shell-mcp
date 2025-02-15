@@ -1,5 +1,7 @@
 # shell-mcp MCP Server
 
+Version: 0.1.1
+
 shell mcp
 
 This is a TypeScript-based MCP server that implements a simple notes system. It demonstrates core MCP concepts by providing:

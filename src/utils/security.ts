@@ -25,13 +25,12 @@ export class SecurityChecker {
     }
   }
 
-  validateEnv(env: Record<string, string>): Record<string, string> {
+  validateEnv(env: Record<string, string | undefined>): Record<string, string> {
     const sanitizedEnv: Record<string, string> = {};
     
-    // 只允許白名單中的環境變數
-    for (const key of Object.keys(env)) {
-      if (securityConfig.allowedEnvVars.includes(key)) {
-        sanitizedEnv[key] = env[key];
+    for (const [key, value] of Object.entries(env)) {
+      if (value && securityConfig.allowedEnvVars.includes(key)) {
+        sanitizedEnv[key] = value;
       }
     }
     

@@ -1,3 +1,5 @@
+import { Readable } from 'stream';
+
 export interface CommandOptions {
   timeout?: number;
   cwd?: string;
@@ -11,9 +13,9 @@ export interface CommandResult {
 }
 
 export interface CommandStream {
-  stdout: ReadableStream;
-  stderr: ReadableStream;
-  status: ReadableStream<CommandStatus>;
+  stdout: Readable;
+  stderr: Readable;
+  status: Readable;
 }
 
 export type CommandStatus = 
@@ -30,4 +32,9 @@ export class CommandError extends Error {
   ) {
     super(`Command failed: ${command} (exit code: ${exitCode})`);
   }
+}
+
+export interface Extra {
+  id?: string;
+  onCancel?: (handler: () => void) => void;
 } 
