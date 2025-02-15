@@ -24,16 +24,9 @@ export class Logger {
     return Logger.instance;
   }
 
-  log(level: LogLevel, message: string, context?: Record<string, unknown>) {
-    const entry: LogEntry = {
-      level,
-      message,
-      timestamp: new Date(),
-      context
-    };
-
+  log(entry: LogEntry): void {
     // 在開發環境輸出到控制台
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
       console.log(JSON.stringify(entry));
     }
 
@@ -41,18 +34,38 @@ export class Logger {
   }
 
   debug(message: string, context?: Record<string, unknown>) {
-    this.log(LogLevel.DEBUG, message, context);
+    this.log({
+      level: LogLevel.DEBUG,
+      message,
+      timestamp: new Date(),
+      context
+    });
   }
 
   info(message: string, context?: Record<string, unknown>) {
-    this.log(LogLevel.INFO, message, context);
+    this.log({
+      level: LogLevel.INFO,
+      message,
+      timestamp: new Date(),
+      context
+    });
   }
 
   warn(message: string, context?: Record<string, unknown>) {
-    this.log(LogLevel.WARN, message, context);
+    this.log({
+      level: LogLevel.WARN,
+      message,
+      timestamp: new Date(),
+      context
+    });
   }
 
   error(message: string, context?: Record<string, unknown>) {
-    this.log(LogLevel.ERROR, message, context);
+    this.log({
+      level: LogLevel.ERROR,
+      message,
+      timestamp: new Date(),
+      context
+    });
   }
 } 

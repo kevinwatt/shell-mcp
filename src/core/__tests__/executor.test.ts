@@ -1,12 +1,19 @@
 /// <reference types="jest" />
 import { CommandExecutor } from '../executor.js';
 import { Readable } from 'stream';
+import { CommandCache } from '../../utils/cache.js';
 
 describe('CommandExecutor', () => {
   let executor: CommandExecutor;
+  let cache: CommandCache;
 
   beforeEach(() => {
     executor = new CommandExecutor();
+    cache = CommandCache.getInstance();
+  });
+
+  afterEach(() => {
+    cache.stopCleanup();
   });
 
   it('應該能執行簡單命令', async () => {

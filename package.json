@@ -1,6 +1,6 @@
 {
   "name": "@kevinwatt/shell-mcp",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Shell command execution MCP server",
   "type": "module",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "test": "jest",
+    "test": "jest src/",
     "lint": "eslint src/**/*.ts",
     "prepare": "npm run build",
     "watch": "tsc --watch"
