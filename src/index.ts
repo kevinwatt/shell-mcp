@@ -1,214 +1,89 @@
 #!/usr/bin/env node
 
 import { ShellMCPServer } from "./mcp/server.js";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListResourcesRequestSchema,
-  ListToolsRequestSchema,
-  ReadResourceRequestSchema,
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+import { Logger } from './utils/logger.js';
+import { CommandCache } from './utils/cache.js';
+import { SecurityChecker } from './utils/security.js';
 
-/**
- * Type alias for a note object.
- */
-type Note = { title: string, content: string };
+const logger = Logger.getInstance();
+const cache = CommandCache.getInstance();
 
-/**
- * Simple in-memory storage for notes.
- * In a real implementation, this would likely be backed by a database.
- */
-const notes: { [id: string]: Note } = {
-  "1": { title: "First Note", content: "This is note 1" },
-  "2": { title: "Second Note", content: "This is note 2" }
-};
-
-/**
- * Create an MCP server with capabilities for resources (to list/read notes),
- * tools (to create new notes), and prompts (to summarize notes).
- */
-const server = new Server(
-  {
-    name: "shell-mcp",
-    version: "0.1.0",
-  },
-  {
-    capabilities: {
-      resources: {},
-      tools: {},
-      prompts: {},
-    },
-  }
-);
-
-/**
- * Handler for listing available notes as resources.
- * Each note is exposed as a resource with:
- * - A note:// URI scheme
- * - Plain text MIME type
- * - Human readable name and description (now including the note title)
- */
-server.setRequestHandler(ListResourcesRequestSchema, async () => {
-  return {
-    resources: Object.entries(notes).map(([id, note]) => ({
-      uri: `note:///${id}`,
-      mimeType: "text/plain",
-      name: note.title,
-      description: `A text note: ${note.title}`
-    }))
-  };
-});
-
-/**
- * Handler for reading the contents of a specific note.
- * Takes a note:// URI and returns the note content as plain text.
- */
-server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-  const url = new URL(request.params.uri);
-  const id = url.pathname.replace(/^\//, '');
-  const note = notes[id];
-
-  if (!note) {
-    throw new Error(`Note ${id} not found`);
-  }
-
-  return {
-    contents: [{
-      uri: request.params.uri,
-      mimeType: "text/plain",
-      text: note.content
-    }]
-  };
-});
-
-/**
- * Handler that lists available tools.
- * Exposes a single "create_note" tool that lets clients create new notes.
- */
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "create_note",
-        description: "Create a new note",
-        inputSchema: {
-          type: "object",
-          properties: {
-            title: {
-              type: "string",
-              description: "Title of the note"
-            },
-            content: {
-              type: "string",
-              description: "Text content of the note"
-            }
-          },
-          required: ["title", "content"]
-        }
-      }
-    ]
-  };
-});
-
-/**
- * Handler for the create_note tool.
- * Creates a new note with the provided title and content, and returns success message.
- */
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  switch (request.params.name) {
-    case "create_note": {
-      const title = String(request.params.arguments?.title);
-      const content = String(request.params.arguments?.content);
-      if (!title || !content) {
-        throw new Error("Title and content are required");
-      }
-
-      const id = String(Object.keys(notes).length + 1);
-      notes[id] = { title, content };
-
-      return {
-        content: [{
-          type: "text",
-          text: `Created note ${id}: ${title}`
-        }]
-      };
-    }
-
-    default:
-      throw new Error("Unknown tool");
-  }
-});
-
-/**
- * Handler that lists available prompts.
- * Exposes a single "summarize_notes" prompt that summarizes all notes.
- */
-server.setRequestHandler(ListPromptsRequestSchema, async () => {
-  return {
-    prompts: [
-      {
-        name: "summarize_notes",
-        description: "Summarize all notes",
-      }
-    ]
-  };
-});
-
-/**
- * Handler for the summarize_notes prompt.
- * Returns a prompt that requests summarization of all notes, with the notes' contents embedded as resources.
- */
-server.setRequestHandler(GetPromptRequestSchema, async (request) => {
-  if (request.params.name !== "summarize_notes") {
-    throw new Error("Unknown prompt");
-  }
-
-  const embeddedNotes = Object.entries(notes).map(([id, note]) => ({
-    type: "resource" as const,
-    resource: {
-      uri: `note:///${id}`,
-      mimeType: "text/plain",
-      text: note.content
-    }
-  }));
-
-  return {
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: "Please summarize the following notes:"
-        }
-      },
-      ...embeddedNotes.map(note => ({
-        role: "user" as const,
-        content: note
-      })),
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: "Provide a concise summary of all the notes above."
-        }
-      }
-    ]
-  };
-});
-
-/**
- * Start the server using stdio transport.
- * This allows the server to communicate via standard input/output streams.
- */
-async function main() {
-  const server = new ShellMCPServer();
-  await server.start();
+async function cleanup() {
+  logger.info('開始清理資源');
+  cache.stopCleanup();
+  logger.info('資源清理完成');
 }
 
-main().catch((error) => {
-  console.error("伺服器錯誤:", error);
+async function main() {
+  try {
+    logger.info('啟動 Shell MCP 伺服器');
+    
+    const server = new ShellMCPServer();
+    
+    // 處理程序信號
+    const handleShutdown = async (signal: string) => {
+      logger.info(`收到 ${signal} 信號，準備關閉伺服器`);
+      await cleanup();
+      process.exit(0);
+    };
+
+    process.on('SIGINT', () => handleShutdown('SIGINT'));
+    process.on('SIGTERM', () => handleShutdown('SIGTERM'));
+    process.on('beforeExit', cleanup);
+
+    // 處理未捕獲的異常
+    process.on('uncaughtException', (error) => {
+      logger.error('未捕獲的異常', {
+        error: error.message,
+        stack: error.stack,
+        type: 'uncaughtException'
+      });
+      cleanup().finally(() => process.exit(1));
+    });
+
+    process.on('unhandledRejection', (reason) => {
+      logger.error('未處理的 Promise 拒絕', {
+        reason: reason instanceof Error ? reason.message : String(reason),
+        stack: reason instanceof Error ? reason.stack : undefined,
+        type: 'unhandledRejection'
+      });
+      cleanup().finally(() => process.exit(1));
+    });
+
+    // 初始化安全檢查器
+    const security = SecurityChecker.getInstance();
+    await security.validateCommand('init', [], {});
+
+    // 啟動快取清理
+    cache.startCleanup();
+
+    // 啟動伺服器
+    await server.start();
+    logger.info('伺服器啟動完成', {
+      version: server.version,
+      capabilities: server.capabilities
+    });
+
+  } catch (error) {
+    logger.error('伺服器啟動失敗', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      type: 'startupError'
+    });
+    
+    await cleanup();
+    process.exit(1);
+  }
+}
+
+// 啟動程式
+main().catch(async (error) => {
+  logger.error('程式執行失敗', {
+    error: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined,
+    type: 'mainError'
+  });
+  
+  await cleanup();
   process.exit(1);
 });

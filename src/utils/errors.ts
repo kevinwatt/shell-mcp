@@ -37,4 +37,15 @@ export class SecurityError extends BaseError {
   constructor(message: string) {
     super(`安全性檢查失敗: ${message}`);
   }
+}
+
+export class ToolError extends Error {
+  constructor(
+    public readonly code: string,
+    message: string,
+    public readonly details?: unknown
+  ) {
+    super(message);
+    this.name = 'ToolError';
+  }
 } 

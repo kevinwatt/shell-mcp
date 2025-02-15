@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import type { ChildProcess } from 'child_process';
 
 export interface CommandOptions {
   timeout?: number;
@@ -15,7 +16,6 @@ export interface CommandResult {
 export interface CommandStream {
   stdout: Readable;
   stderr: Readable;
-  status: Readable;
 }
 
 export type CommandStatus = 
@@ -23,6 +23,16 @@ export type CommandStatus =
   | { type: 'completed', exitCode: number }
   | { type: 'error', error: Error }
   | { type: 'interrupted' };
+
+export interface ProcessWrapper {
+  process: ChildProcess;
+  stdout: Readable;
+  stderr: Readable;
+}
+
+export interface ExecuteOptions extends CommandOptions {
+  signal?: AbortSignal;
+}
 
 export class CommandError extends Error {
   constructor(

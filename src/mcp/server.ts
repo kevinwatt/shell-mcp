@@ -11,24 +11,57 @@ import { Logger } from "../utils/logger.js";
 import { CommandExecutor } from "../core/executor.js";
 import { CommandValidator } from "../core/validator.js";
 
-// 自行定義 Extra 型別
+// 型別定義
 interface Extra {
   id?: string;
   onCancel?: (handler: () => void) => void;
 }
 
-type ToolResponse = {
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-};
+interface Tool {
+  name: string;
+  description: string;
+  inputSchema: {
+    type: "object";
+    properties: {
+      args: {
+        type: "array";
+        items: { type: "string" };
+        description: string;
+      };
+    };
+  };
+}
 
-type CommandResult = {
-  stdout: Readable;
-};
+interface ToolsResponse {
+  tools: Tool[];
+}
+
+interface CommandContext extends Record<string, unknown> {
+  requestId: string;
+  command: string;
+  args: string[];
+  timeout?: number;
+  workDir?: string;
+  env?: Record<string, string>;
+}
+
+class ToolError extends Error {
+  constructor(
+    public readonly code: string,
+    message: string,
+    public readonly details?: unknown
+  ) {
+    super(message);
+    this.name = 'ToolError';
+  }
+}
 
 export class ShellMCPServer {
+  public readonly version = "0.1.6";
+  public readonly capabilities = {
+    tools: {}
+  };
+
   private server: Server;
   private executor: CommandExecutor;
   private validator: CommandValidator;
@@ -38,7 +71,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.1.6",
+        version: "0.2.0",
       },
       {
         capabilities: {
@@ -54,80 +87,124 @@ export class ShellMCPServer {
     this.setupHandlers();
   }
 
+  private validateToolNames(tools: Tool[]): void {
+    const names = new Set<string>();
+    for (const tool of tools) {
+      if (names.has(tool.name)) {
+        throw new ToolError(
+          'DUPLICATE_TOOL',
+          'Tool names must be unique',
+          { toolName: tool.name, existingTools: Array.from(names) }
+        );
+      }
+      names.add(tool.name);
+    }
+  }
+
+  private processTools(): Tool[] {
+    const tools: Tool[] = [];
+    const processedNames = new Set<string>();
+
+    Object.entries(allowedCommands).forEach(([name, config]) => {
+      const toolName = name.replace('shell.', '');
+      if (!processedNames.has(toolName)) {
+        processedNames.add(toolName);
+        tools.push({
+          name: toolName,
+          description: config.description,
+          inputSchema: {
+            type: "object",
+            properties: {
+              args: {
+                type: "array",
+                items: { type: "string" },
+                description: "命令參數"
+              }
+            }
+          }
+        });
+      }
+    });
+
+    this.validateToolNames(tools);
+    return tools;
+  }
+
   private setupHandlers() {
     this.server.setRequestHandler(ListToolsRequestSchema, async (_request, extra: unknown) => {
       const ext = extra as Extra;
-      this.logger.info('收到列出工具請求', { requestId: ext.id });
+      this.logger.info('開始處理列出工具請求', { requestId: ext.id });
       
-      // 使用 Set 來確保工具名稱唯一
-      const uniqueTools = new Map();
-      
-      Object.entries(allowedCommands).forEach(([name, config]) => {
-        const toolName = name.replace('shell.', '');
-        if (!uniqueTools.has(toolName)) {
-          uniqueTools.set(toolName, {
-            name: toolName,
-            description: config.description,
-            inputSchema: {
-              type: "object",
-              properties: {
-                args: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "命令參數"
-                }
-              }
-            }
-          });
-        }
-      });
-
-      return {
-        tools: Array.from(uniqueTools.values())
-      };
+      try {
+        const tools = this.processTools();
+        
+        this.logger.info('完成列出工具請求', { 
+          requestId: ext.id,
+          toolCount: tools.length 
+        });
+        
+        return { tools };
+      } catch (error) {
+        this.logger.error('列出工具請求失敗', {
+          requestId: ext.id,
+          error: error instanceof Error ? error.message : String(error)
+        });
+        throw error;
+      }
     });
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request, extra: unknown) => {
       const ext = extra as Extra;
       if (!request.params?.name) {
-        throw new Error('Command name is required');
+        throw new ToolError('MISSING_COMMAND', 'Command name is required');
       }
       
       const command = String(request.params.name);
-      const fullCommand = `shell.${command}`;
+      const fullCommand = command.startsWith('shell.') ? command : `shell.${command}`;
+      
       if (!(fullCommand in allowedCommands)) {
-        throw new Error('Command not found');
+        throw new ToolError('COMMAND_NOT_FOUND', 'Command not found', { command });
       }
+      
       const config = allowedCommands[fullCommand];
-
       const args = Array.isArray(request.params.arguments?.args)
         ? request.params.arguments.args.map(String)
         : [];
 
-      this.logger.info('收到執行命令請求', { requestId: ext.id });
+      const context: CommandContext = {
+        requestId: ext.id || 'unknown',
+        command,
+        args,
+        timeout: config.timeout,
+        workDir: config.workDir,
+        env: config.env
+      };
+
+      this.logger.info('開始執行命令', context);
 
       try {
         this.validator.validateCommand(command, args);
         
         this.logger.debug('命令驗證通過', {
-          requestId: ext.id,
-          command,
+          ...context,
           config
         });
 
         const stream = await this.executor.execute(command, args, {
-          timeout: config.timeout
+          timeout: config.timeout,
+          cwd: config.workDir,
+          env: config.env
         });
 
         ext.onCancel?.(() => {
-          this.logger.info('收到取消請求');
+          this.logger.info('收到取消請求', context);
           this.executor.interrupt();
         });
 
         const output = await this.collectOutput(stream);
 
         this.logger.info('命令執行完成', {
-          requestId: ext.id,
+          ...context,
           outputLength: output.length
         });
 
@@ -138,20 +215,23 @@ export class ShellMCPServer {
           }]
         };
 
-      } catch (error: unknown) {
+      } catch (error) {
         this.logger.error('命令執行失敗', {
-          requestId: ext.id,
+          ...context,
           error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-          command,
-          args
+          stack: error instanceof Error ? error.stack : undefined
         });
-        throw new Error(`Command execution failed: ${error instanceof Error ? error.message : String(error)}`);
+        
+        throw new ToolError(
+          'EXECUTION_FAILED',
+          `Command execution failed: ${error instanceof Error ? error.message : String(error)}`,
+          context
+        );
       }
     });
   }
 
-  private async collectOutput(stream: CommandResult): Promise<string> {
+  private async collectOutput(stream: { stdout: Readable }): Promise<string> {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
       stream.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
