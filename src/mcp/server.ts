@@ -57,7 +57,7 @@ class ToolError extends Error {
 }
 
 export class ShellMCPServer {
-  public readonly version = "0.2.7";
+  public readonly version = "0.2.8";
   public readonly capabilities = {};
 
   private server: Server;
@@ -69,7 +69,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.2.7",
+        version: "0.2.8",
         description: "Shell command execution MCP server"
       },
       {
@@ -254,11 +254,15 @@ export class ShellMCPServer {
 
   async start() {
     try {
+      // 確保 stdio 流已準備好
+      process.stdin.setEncoding('utf8');
+      process.stdout.setEncoding('utf8');
+      
       const transport = new StdioServerTransport();
       
-      // 等待 Server 完全初始化
+      // 等待 stdio 流初始化
       await new Promise(resolve => setTimeout(resolve, 100));
-
+      
       await this.server.connect(transport);
       
       this.logger.info('MCP 伺服器已啟動並等待連接', {
@@ -266,9 +270,22 @@ export class ShellMCPServer {
         version: this.version
       });
       
-      // 保持進程運行，但允許正常的錯誤處理
+      // 保持進程運行並處理錯誤
       return new Promise((_, reject) => {
-        process.on('error', reject);
+        process.stdin.on('end', () => {
+          this.logger.error('標準輸入已關閉');
+          reject(new Error('標準輸入已關閉'));
+        });
+        
+        process.stdin.on('error', (error) => {
+          this.logger.error('標準輸入錯誤', { error });
+          reject(error);
+        });
+        
+        process.stdout.on('error', (error) => {
+          this.logger.error('標準輸出錯誤', { error });
+          reject(error);
+        });
       });
       
     } catch (error) {
