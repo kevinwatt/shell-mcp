@@ -27,7 +27,7 @@ export class ShellMCPServer {
     this.server = new Server(
       {
         name: "shell-mcp",
-        version: "0.1.3",
+        version: "0.1.4",
       },
       {
         capabilities: {
@@ -50,7 +50,7 @@ export class ShellMCPServer {
       
       return {
         tools: Object.entries(allowedCommands).map(([name, config]) => ({
-          name,
+          name: name.replace('shell.', ''),
           description: config.description,
           inputSchema: {
             type: "object",

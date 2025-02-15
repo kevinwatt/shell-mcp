@@ -8,16 +8,23 @@ export interface CommandConfig {
 }
 
 export const allowedCommands: Record<string, CommandConfig> = {
-  'ls': {
+  'shell.ls': {
     command: 'ls',
     description: '列出目錄內容',
-    allowedArgs: ['-l', '-a', '-h', '--help', '-R'],
+    allowedArgs: ['-l', '-a', '-h', '-R'],
     timeout: 5000
   },
-  'pwd': {
+  'shell.pwd': {
     command: 'pwd',
     description: '顯示當前工作目錄',
-    timeout: 1000
+    timeout: 1000,
+    allowedArgs: []
+  },
+  'shell.df': {
+    command: 'df',
+    description: '顯示磁碟使用情況',
+    timeout: 5000,
+    allowedArgs: ['-h', '-T']
   },
   'echo': {
     command: 'echo',
@@ -28,12 +35,6 @@ export const allowedCommands: Record<string, CommandConfig> = {
     command: 'ps',
     description: '顯示進程狀態',
     allowedArgs: ['-e', '-f', '-u', '--help'],
-    timeout: 5000
-  },
-  'df': {
-    command: 'df',
-    description: '顯示磁碟使用情況',
-    allowedArgs: ['-h', '--help'],
     timeout: 5000
   },
   'free': {
