@@ -50,17 +50,6 @@ async function main() {
       cleanup().finally(() => process.exit(1));
     });
 
-    // 處理 stdio 流的錯誤
-    process.stdin.on('error', (error) => {
-      logger.error('標準輸入錯誤', { error: error.message });
-      cleanup().finally(() => process.exit(1));
-    });
-
-    process.stdout.on('error', (error) => {
-      logger.error('標準輸出錯誤', { error: error.message });
-      cleanup().finally(() => process.exit(1));
-    });
-
     // 確保在父進程斷開連接時正確清理
     process.on('disconnect', () => {
       logger.error('與父進程的連接已關閉');
