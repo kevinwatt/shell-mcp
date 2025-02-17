@@ -2,7 +2,7 @@
 
 > Shell command execution MCP server
 
-[![Version](https://img.shields.io/badge/version-0.4.6-blue.svg)](https://github.com/kevinwatt/shell-mcp)
+[![Version](https://img.shields.io/badge/version-0.4.15-blue.svg)](https://github.com/kevinwatt/shell-mcp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An MCP server implementation that provides secure shell command execution capabilities for LLMs.
@@ -49,16 +49,6 @@ npm install @kevinwatt/shell-mcp
     - `args` (array, optional): Command arguments
     - `timeout` (number, optional): Execution timeout in ms
 
-Available commands:
-- shell_ls: List directory contents
-- shell_pwd: Show current working directory
-- shell_df: Show disk usage
-- shell_echo: Display text
-- shell_ps: Show process status
-- shell_free: Show memory usage
-- shell_uptime: Show system uptime
-- shell_date: Show system date and time
-
 ## Usage Examples
 
 Ask your LLM to:
@@ -100,7 +90,7 @@ npm run lint
 
 ## License
 
-MIT © Kevin Watt
+MIT © Dewei Yen
 
 ## Keywords
 
@@ -137,3 +127,4 @@ The following shell commands are available:
 | nslookup   | Query DNS records                                     | -type=*, -query=*, *                |
 | ip         | Show network devices and interfaces                   | addr, link, route, neigh, -br, *    |
 | whereis    | Locate binary, source and manual files                | -b, -m, -s, *                       |
+
