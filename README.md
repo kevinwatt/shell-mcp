@@ -110,3 +110,30 @@ MIT © Kevin Watt
 - claude
 - llm
 - automation
+
+## Available Commands
+
+The following shell commands are available:
+
+| Command    | Description                                           | Allowed Arguments                    |
+|------------|-------------------------------------------------------|-------------------------------------|
+| ls         | List directory contents                               | -l, -a, -h, -R, --help, *           |
+| cat        | Concatenate and display file contents                 | -n, -b, --help, *                   |
+| pwd        | Show current working directory                        | None                                |
+| df         | Show disk usage                                       | -h, -T, --help                      |
+| echo       | Display text                                          | Any text                            |
+| ps         | Show process status                                   | -e, -f, -u, --help                  |
+| free       | Show memory usage                                     | -h, -m, -g, --help                  |
+| uptime     | Show system uptime                                    | None                                |
+| date       | Show system date and time                             | +%Y-%m-%d, +%H:%M:%S, --help        |
+| grep       | Search text patterns in files                         | -i, -v, -n, -r, -l, --color, *      |
+| w          | Show who is logged on and what they are doing         | -h, -s, --no-header, --help         |
+| whois      | Query WHOIS domain registration information           | -H, *                               |
+| find       | Search for files in a directory hierarchy             | -name, -type, -size, -mtime, *      |
+| netstat    | Network connection information                        | -a, -n, -t, -u, -l, -p, --help      |
+| lspci      | List PCI devices                                      | -v, -k, -mm, -nn, --help            |
+| lsusb      | List USB devices                                      | -v, -t, -d, -s, --help              |
+| dig        | DNS lookup utility                                    | +short, +trace, +dnssec, @*, *      |
+| nslookup   | Query DNS records                                     | -type=*, -query=*, *                |
+| ip         | Show network devices and interfaces                   | addr, link, route, neigh, -br, *    |
+| whereis    | Locate binary, source and manual files                | -b, -m, -s, *                       |
