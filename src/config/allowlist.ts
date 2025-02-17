@@ -181,6 +181,17 @@ export const allowedCommands: Record<string, CommandConfig> = {
       '*'         // allow interface names
     ],
     timeout: 3000
+  },
+  'shell.whereis': {
+    command: 'whereis',
+    description: 'Locate the binary, source, and manual page files for a command',
+    allowedArgs: [
+      '-b',  // 只搜索二進制文件
+      '-m',  // 只搜索手冊頁
+      '-s',  // 只搜索源代碼
+      '*'    // 允許任何命令名稱作為參數
+    ],
+    timeout: 3000
   }
 };
 
