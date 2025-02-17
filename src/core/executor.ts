@@ -34,21 +34,21 @@ export class CommandExecutor {
     const commandKey = `${command} ${args.join(' ')}`;
     
     try {
-      // 檢查安全性
+      // Check security
       await this.securityChecker.validateCommand(command, args, options);
 
-      // 檢查快取
+      // Check cache
       const cached = this.cache.get(commandKey);
       if (cached) {
-        this.logger.debug('使用快取的命令結果', { command, args });
+        this.logger.debug('Using cached command result', { command, args });
         return this.createStreamFromCache(cached);
       }
 
-      // 移除 'shell.' 前綴以執行命令
+      // Remove 'shell.' prefix for execution
       const baseCommand = command.replace('shell.', '');
 
-      // 執行命令
-      this.logger.debug('開始執行命令', { command, args, options });
+      // Execute command
+      this.logger.debug('Starting command execution', { command, args, options });
       const childProcess = spawn(baseCommand, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: options.timeout,
@@ -62,25 +62,25 @@ export class CommandExecutor {
 
       this.currentProcess = childProcess;
 
-      // 錯誤處理
+      // Error handling
       childProcess.on('error', (error: Error) => {
-        this.logger.error('命令執行錯誤', {
+        this.logger.error('Command execution error', {
           command,
           args,
           error: error.message
         });
         throw new ToolError(
           'PROCESS_ERROR',
-          '命令執行錯誤',
+          'Command execution error',
           { command, args, error: error.message }
         );
       });
 
-      // 超時處理
+      // Timeout handling
       if (options.timeout) {
         setTimeout(() => {
           if (childProcess.exitCode === null) {
-            this.logger.warn('命令執行超時', {
+            this.logger.warn('Command execution timeout', {
               command,
               args,
               timeout: options.timeout
@@ -88,7 +88,7 @@ export class CommandExecutor {
             childProcess.kill();
             throw new ToolError(
               'TIMEOUT',
-              '命令執行超時',
+              'Command execution timeout',
               { command, args, timeout: options.timeout }
             );
           }
@@ -98,14 +98,14 @@ export class CommandExecutor {
       if (!childProcess.stdout) {
         throw new ToolError(
           'STREAM_ERROR',
-          '無法獲取命令輸出流',
+          'Unable to get command output stream',
           { command, args }
         );
       }
 
-      // 監控進程狀態
+      // Monitor process status
       childProcess.on('exit', (code, signal) => {
-        this.logger.debug('命令執行完成', {
+        this.logger.debug('Command execution completed', {
           command,
           args,
           exitCode: code,
@@ -118,7 +118,7 @@ export class CommandExecutor {
       };
 
     } catch (error) {
-      this.logger.error('命令執行失敗', {
+      this.logger.error('Command execution failed', {
         command,
         args,
         error: error instanceof Error ? error.message : String(error)
@@ -126,7 +126,7 @@ export class CommandExecutor {
       
       throw new ToolError(
         'EXECUTION_ERROR',
-        '命令執行失敗',
+        'Command execution failed',
         { 
           command, 
           args, 
@@ -149,7 +149,7 @@ export class CommandExecutor {
 
   interrupt(): void {
     if (this.currentProcess && this.currentProcess.exitCode === null) {
-      this.logger.info('中斷命令執行');
+      this.logger.info('Interrupting command execution');
       this.currentProcess.kill();
     }
   }

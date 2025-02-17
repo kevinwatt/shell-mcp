@@ -106,13 +106,13 @@ export class ShellMCPServer {
     const tools: Tool[] = [];
     const processedNames = new Set<string>();
 
-    this.logger.debug('開始處理工具列表', { 
+    this.logger.debug('Starting to process tool list', { 
       commandCount: Object.keys(allowedCommands).length 
     });
 
     Object.entries(allowedCommands).forEach(([name, config]) => {
       const toolName = name.replace('shell.', '');
-      this.logger.debug('處理命令', { 
+      this.logger.debug('Processing command', { 
         originalName: name,
         toolName,
         isProcessed: processedNames.has(toolName)
@@ -129,7 +129,7 @@ export class ShellMCPServer {
               args: {
                 type: "array",
                 items: { type: "string" },
-                description: "命令參數"
+                description: "Command arguments"
               }
             }
           }
@@ -137,7 +137,7 @@ export class ShellMCPServer {
       }
     });
 
-    this.logger.debug('工具列表處理完成', { 
+    this.logger.debug('Tool list processing completed', { 
       toolCount: tools.length,
       processedNames: Array.from(processedNames)
     });
@@ -149,19 +149,19 @@ export class ShellMCPServer {
   private setupHandlers() {
     this.server.setRequestHandler(ListToolsRequestSchema, async (_request, extra: unknown) => {
       const ext = extra as Extra;
-      this.logger.info('開始處理列出工具請求', { requestId: ext.id });
+      this.logger.info('Starting to process list tools request', { requestId: ext.id });
       
       try {
         const tools = this.processTools();
         
-        this.logger.info('完成列出工具請求', { 
+        this.logger.info('List tools request completed', { 
           requestId: ext.id,
           toolCount: tools.length 
         });
         
         return { tools };
       } catch (error) {
-        this.logger.error('列出工具請求失敗', {
+        this.logger.error('List tools request failed', {
           requestId: ext.id,
           error: error instanceof Error ? error.message : String(error)
         });
@@ -196,12 +196,12 @@ export class ShellMCPServer {
         env: config.env
       };
 
-      this.logger.info('開始執行命令', context);
+      this.logger.info('Starting command execution', context);
 
       try {
         this.validator.validateCommand(command, args);
         
-        this.logger.debug('命令驗證通過', {
+        this.logger.debug('Command validation passed', {
           ...context,
           config
         });
@@ -213,13 +213,13 @@ export class ShellMCPServer {
         });
 
         ext.onCancel?.(() => {
-          this.logger.info('收到取消請求', context);
+          this.logger.info('Received cancel request', context);
           this.executor.interrupt();
         });
 
         const output = await this.collectOutput(stream);
 
-        this.logger.info('命令執行完成', {
+        this.logger.info('Command execution completed', {
           ...context,
           outputLength: output.length
         });
@@ -232,7 +232,7 @@ export class ShellMCPServer {
         };
 
       } catch (error) {
-        this.logger.error('命令執行失敗', {
+        this.logger.error('Command execution failed', {
           ...context,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined

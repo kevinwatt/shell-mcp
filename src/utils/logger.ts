@@ -25,12 +25,12 @@ export class Logger {
   }
 
   log(entry: LogEntry): void {
-    // 在開發環境輸出到控制台
+    // Output to console in development environment
     if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
       console.log(JSON.stringify(entry));
     }
 
-    // TODO: 在生產環境可以加入檔案記錄或其他日誌系統
+    // TODO: Add file logging or other logging systems in production
   }
 
   debug(message: string, context?: Record<string, unknown>) {

@@ -2,36 +2,36 @@ import { Readable } from 'stream';
 import type { ChildProcess } from 'child_process';
 
 export interface CommandOptions {
-  timeout?: number;
-  cwd?: string;
-  env?: NodeJS.ProcessEnv;
+  timeout?: number;  // in milliseconds
+  cwd?: string;     // working directory
+  env?: NodeJS.ProcessEnv;  // environment variables
 }
 
 export interface CommandResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
+  stdout: string;   // standard output
+  stderr: string;   // standard error
+  exitCode: number; // process exit code
 }
 
 export interface CommandStream {
-  stdout: Readable;
-  stderr: Readable;
+  stdout: Readable; // standard output stream
+  stderr: Readable; // standard error stream
 }
 
 export type CommandStatus = 
-  | { type: 'running' }
-  | { type: 'completed', exitCode: number }
-  | { type: 'error', error: Error }
-  | { type: 'interrupted' };
+  | { type: 'running' }      // process is running
+  | { type: 'completed', exitCode: number }  // process completed
+  | { type: 'error', error: Error }         // process failed
+  | { type: 'interrupted' };                // process was interrupted
 
 export interface ProcessWrapper {
-  process: ChildProcess;
-  stdout: Readable;
-  stderr: Readable;
+  process: ChildProcess;  // child process instance
+  stdout: Readable;       // standard output stream
+  stderr: Readable;       // standard error stream
 }
 
 export interface ExecuteOptions extends CommandOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal;  // abort signal for cancellation
 }
 
 export class CommandError extends Error {
@@ -45,6 +45,10 @@ export class CommandError extends Error {
 }
 
 export interface Extra {
-  id?: string;
-  onCancel?: (handler: () => void) => void;
-} 
+  id?: string;  // request ID
+  onCancel?: (handler: () => void) => void;  // cancellation handler
+}
+
+export type RateLimitConfig = {
+  [key: string]: number;  // 添加索引簽章
+}; 

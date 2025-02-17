@@ -31,17 +31,17 @@ export class CommandCache {
 
     const age = Date.now() - entry.timestamp;
     if (age > (ttl || this.TTL)) {
-      this.logger.debug('快取項目已過期', { key, age });
+      this.logger.debug('Cache entry expired', { key, age });
       this.cache.delete(key);
       return null;
     }
 
-    this.logger.debug('從快取中取得結果', { key });
+    this.logger.debug('Retrieved result from cache', { key });
     return entry.result;
   }
 
   set(key: string, result: CommandResult): void {
-    this.logger.debug('設置快取', { key });
+    this.logger.debug('Setting cache', { key });
     this.cache.set(key, {
       result,
       timestamp: Date.now()
@@ -53,7 +53,7 @@ export class CommandCache {
       return;
     }
 
-    this.logger.debug('啟動快取清理排程', { interval: this.TTL });
+    this.logger.debug('Starting cache cleanup schedule', { interval: this.TTL });
     this.cleanupInterval = setInterval(() => {
       this.cleanup();
     }, this.TTL);
@@ -65,14 +65,14 @@ export class CommandCache {
 
   stopCleanup(): void {
     if (this.cleanupInterval) {
-      this.logger.debug('停止快取清理排程');
+      this.logger.debug('Stopping cache cleanup schedule');
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
     }
   }
 
   clear(): void {
-    this.logger.debug('清除所有快取');
+    this.logger.debug('Clearing all cache');
     this.cache.clear();
   }
 
@@ -88,9 +88,9 @@ export class CommandCache {
     }
 
     if (cleaned > 0) {
-      this.logger.debug('清理過期快取', { 
-        cleanedEntries: cleaned,
-        remainingEntries: this.cache.size
+      this.logger.debug('Cleaned expired cache entries', { 
+        entriesRemoved: cleaned,
+        entriesRemaining: this.cache.size
       });
     }
   }

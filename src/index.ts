@@ -23,10 +23,10 @@ const server = new Server(
   }
 );
 
-// 設置工具處理程式
+// Set up tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   const tools = Object.entries(allowedCommands).map(([name, config]) => ({
-    name: name.replace('shell.', 'shell_'),  // 將 shell. 替換為 shell_
+    name: name.replace('shell.', 'shell_'),  // Replace shell. with shell_
     description: config.description,
     inputSchema: {
       type: "object",
@@ -45,7 +45,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const command = String(request.params?.name || '');
-    const fullCommand = `shell.${command.replace('shell_', '')}`;  // 將 shell_ 替換回 shell.
+    const fullCommand = `shell.${command.replace('shell_', '')}`;  // Replace shell_ back to shell.
     
     if (!(fullCommand in allowedCommands)) {
       return {

@@ -10,7 +10,7 @@ export class CommandValidationError extends BaseError {
     public readonly command: string,
     public readonly reason: string
   ) {
-    super(`命令驗證失敗 (${command}): ${reason}`);
+    super(`Command validation failed (${command}): ${reason}`);
   }
 }
 
@@ -20,7 +20,7 @@ export class CommandExecutionError extends BaseError {
     public readonly exitCode: number,
     public readonly stderr: string
   ) {
-    super(`命令執行失敗 (${command}): 退出碼 ${exitCode}`);
+    super(`Command execution failed (${command}): exit code ${exitCode}`);
   }
 }
 
@@ -29,13 +29,13 @@ export class CommandTimeoutError extends BaseError {
     public readonly command: string,
     public readonly timeout: number
   ) {
-    super(`命令執行超時 (${command}): ${timeout}ms`);
+    super(`Command execution timeout (${command}): ${timeout}ms`);
   }
 }
 
 export class SecurityError extends BaseError {
   constructor(message: string) {
-    super(`安全性檢查失敗: ${message}`);
+    super(`Security check failed: ${message}`);
   }
 }
 
