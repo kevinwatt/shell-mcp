@@ -2,6 +2,8 @@ import { securityConfig } from '../config/allowlist.js';
 import { ToolError } from './errors.js';
 import { CommandOptions, RateLimitConfig } from '../types/index.js';
 import { Logger } from './logger.js';
+import { normalize } from 'path';
+import { promises as fs } from 'fs';
 
 export class SecurityChecker {
   private static instance: SecurityChecker;
@@ -60,7 +62,7 @@ export class SecurityChecker {
   }
 
   public validatePath(path: string): void {
-    const normalizedPath = require('path').normalize(path);
+    const normalizedPath = normalize(path);
     
     // 先檢查目錄深度
     const parts = normalizedPath.split('/').filter(Boolean);
@@ -147,7 +149,6 @@ export class SecurityChecker {
   }
 
   public async validateFileSize(path: string): Promise<void> {
-    const { promises: fs } = require('fs');
     try {
       const stats = await fs.stat(path);
       if (stats.size > securityConfig.maxFileSize) {

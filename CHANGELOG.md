@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.13] - 2025-02-18
+
+### Fixed
+- Fixed require is not defined error in ESM context
+- Updated path and fs imports to use ES modules
+- Improved module compatibility
+
 ## [0.4.12] - 2025-02-18
 
 ### Added
