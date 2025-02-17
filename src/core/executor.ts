@@ -12,6 +12,8 @@ import { CommandCache } from '../utils/cache.js';
 import { Logger } from '../utils/logger.js';
 import { ToolError } from '../utils/errors.js';
 import { Readable } from 'stream';
+import path from 'path';
+import fs from 'fs';
 
 export class CommandExecutor {
   private currentProcess: ChildProcess | null = null;
@@ -151,6 +153,16 @@ export class CommandExecutor {
     if (this.currentProcess && this.currentProcess.exitCode === null) {
       this.logger.info('Interrupting command execution');
       this.currentProcess.kill();
+    }
+  }
+
+  private validateCommand(command: string): void {
+    const resolvedPath = path.resolve(command);
+    
+    try {
+      fs.accessSync(resolvedPath, fs.constants.X_OK);
+    } catch (error) {
+      throw new Error(`Command not executable: ${command}`);
     }
   }
 } 
