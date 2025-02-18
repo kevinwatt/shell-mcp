@@ -5,6 +5,10 @@ export interface CommandConfig {
   timeout?: number;
   workDir?: string;
   env?: Record<string, string>;
+  rateLimit?: {
+    maxInvocations: number;
+    timeWindow: number;
+  };
 }
 
 export const allowedCommands: Record<string, CommandConfig> = {
@@ -192,6 +196,28 @@ export const allowedCommands: Record<string, CommandConfig> = {
       '*'    // 允許任何命令名稱作為參數
     ],
     timeout: 3000
+  },
+  'shell.mpv': {
+    command: 'mpv',
+    description: 'Play media files using mpv player',
+    allowedArgs: [
+      '-v', '--version',  // 版本資訊
+      '--no-video',      // 僅播放音訊
+      '--start',         // 開始時間
+      '--length',        // 播放長度
+      '--volume',        // 音量控制
+      '--fullscreen',    // 全螢幕
+      '--playlist',      // 播放清單
+      '--shuffle',       // 隨機播放
+      '--loop',          // 循環播放
+      '*'                // 允許檔案路徑
+    ],
+    rateLimit: {
+      maxInvocations: 10,
+      timeWindow: 60
+    },
+    timeout: 7200,      // 2小時逾時
+    workDir: '.'        // 允許在當前目錄執行
   }
 };
 
